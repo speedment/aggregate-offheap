@@ -28,9 +28,11 @@ public class AggregateBenchmark {
             .collect(Collectors.toList());
 
         aggregator1 = Aggregator.builderOfType(Employee.class, Result::new)
+
             //.on(ToEnum.of(Employee.Gender.class, Employee::gender)).key(Result::setGender)
             //.on((ToEnum<Employee, Employee.Gender>)Employee::gender).key(Result::setGender)
             //.on(ToInt.of(Employee::salary).divide(1000).asInt()).key(Result::setBracket)
+
             .on((Employee e) -> e.gender().ordinal()).key((Result r, int i) -> r.setGender(Employee.Gender.values()[i]))
             .on(Employee::salary).key(Result::setBracket)
             .count(Result::setCount)
@@ -127,6 +129,12 @@ public class AggregateBenchmark {
         System.out.println("setup");
         ab.setup();
 
+
+        System.out.println("Running...");
+
+        ab.aggregateOffHeap();
+
+/*
         System.out.println("Start aggregation");
         try (Aggregation<Result> aggregation = ab.aggregateOffHeap()) {
             System.out.println("Counting");
@@ -150,7 +158,7 @@ public class AggregateBenchmark {
 
         final Histogram h2 = new Histogram("Heap",10, 2000);
         h2.benchmark(ab::aggregateJava1, samples, parallelism);
-        System.out.println(h2);
+        System.out.println(h2); */
 
         System.out.println("tearDown");
         ab.tearDown();
